@@ -1,0 +1,182 @@
+<!DOCTYPE html><html lang="en" class="desktop-style"><head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>UtubeTrollPolice.party</title>
+    <meta name="description" content="UtubeTrollPolice, (or just the Utrorty) is an imageboard dedicated to the creation, posting, and sharing of Uttp Images.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: black;
+            overflow: hidden;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        body.hide-cursor {
+            cursor: none;
+        }
+
+        #coverFrame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            border: none;
+            z-index: 10;
+            opacity: 1;
+            transition: opacity 0.6s ease;
+        }
+
+        #clickCatcher {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 20;
+            background: transparent;
+            pointer-events: auto;
+            touch-action: none;
+            cursor: default;
+        }
+
+        video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: fill;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+            background: black;
+        }
+
+        video.visible {
+            opacity: 1;
+            z-index: 8;
+        }
+
+        #rotate-text {
+            position: fixed;
+            top: 50%;
+            left: 45%;
+            transform-origin: center;
+            transform: translate(-50%, -50%) rotate(0deg);
+            font-size: 3em;
+            font-weight: bold;
+            color: white;
+            -webkit-text-stroke: 1.5px black;
+            text-shadow:
+                1px 1px 0 black,
+                -1px 1px 0 black,
+                1px -1px 0 black,
+                -1px -1px 0 black;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 25;
+            user-select: none;
+        }
+    </style>
+</head>
+
+<body>
+    <iframe id="coverFrame" src="index_1.html" allowfullscreen=""></iframe>
+    <div id="clickCatcher"></div>
+    <video id="bgVideo" autoplay="" loop="" playsinline="" muted="" src="media/u1y013.mp4"></video>
+    <div id="rotate-text">Loading IP...</div>
+    <script>
+        const videos = [
+  'https://files.catbox.moe/8h2le9.mp4',
+  'https://files.catbox.moe/51ydv0.mp4',
+  'https://files.catbox.moe/51ydv0.mp4',
+  'https://files.catbox.moe/51ydv0.mp4',
+  'https://files.catbox.moe/sziqkw.mp4',
+  'https://files.catbox.moe/sziqkw.mp4',
+  'https://files.catbox.moe/sziqkw.mp4,
+  'https://files.catbox.moe/sziqkw.mp4',
+  'https://files.catbox.moe/sziqkw.mp4',
+  'https://files.catbox.moe/8h2le9.mp4'',
+  'https://files.catbox.moe/8h2le9.mp4',
+  'https://files.catbox.moe/8h2le9.mp4',
+  'https://files.catbox.moe/8h2le9.mp4'',
+        ];
+
+        const coverFrame = document.getElementById('coverFrame');
+        const clickCatcher = document.getElementById('clickCatcher');
+        const videoElement = document.getElementById('bgVideo');
+        const rotateText = document.getElementById('rotate-text');
+
+        let angle = 0;
+        let triggered = false;
+        const isNewWindow = !!window.opener;
+        const selectedVideo = videos[Math.floor(Math.random() * videos.length)];
+        videoElement.src = selectedVideo;
+
+        function animateText() {
+            const rotation = 10 * Math.sin(angle);
+            rotateText.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+            angle += 0.05;
+            requestAnimationFrame(animateText);
+        }
+
+        function showIPText() {
+            fetch('https://api.ipify.org?format=json')
+                .then(res => res.json())
+                .then(data => {
+                    rotateText.textContent = `IP: ${data.ip}`;
+                    rotateText.style.opacity = '1';
+                })
+                .catch(() => {
+                    rotateText.textContent = 'IP not available';
+                    rotateText.style.opacity = '1';
+                });
+            animateText();
+        }
+
+        function triggerFadeOut() {
+            if (triggered) return;
+            triggered = true;
+
+            videoElement.muted = false;
+            videoElement.classList.add('visible');
+            videoElement.play().catch(() => { });
+            showIPText();
+
+            coverFrame.style.opacity = '0';
+            clickCatcher.style.opacity = '0';
+
+            setTimeout(() => {
+                coverFrame.remove();
+                clickCatcher.remove();
+                document.body.classList.add('hide-cursor');
+            }, 600);
+        }
+
+        if (isNewWindow) {
+            coverFrame.style.display = 'none';
+            clickCatcher.style.display = 'none';
+            videoElement.classList.add('visible');
+            videoElement.muted = false;
+            videoElement.play().catch(() => { });
+        } else {
+            videoElement.muted = true;
+        }
+
+        clickCatcher.addEventListener('click', triggerFadeOut);
+        window.addEventListener('click', triggerFadeOut);
+        window.addEventListener('keydown', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            triggerFadeOut();
+        }, true);
+    </script>
+    <script src="js/script.js"></script>
+
+
+</body></html>
