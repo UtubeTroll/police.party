@@ -1,182 +1,466 @@
-<!DOCTYPE html><html lang="en" class="desktop-style"><head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>UtubeTrollPolice.party</title>
-    <meta name="description" content="UtubeTrollPolice, (or just the Utrorty) is an imageboard dedicated to the creation, posting, and sharing of Uttp Images.">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes">
-    <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-            background: black;
-            overflow: hidden;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-        }
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Troll Police - Tinyboard</title>
 
-        body.hide-cursor {
-            cursor: none;
-        }
+<style>
+* {
+    box-sizing: border-box;
+}
 
-        #coverFrame {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            border: none;
-            z-index: 10;
-            opacity: 1;
-            transition: opacity 0.6s ease;
-        }
+html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+}
 
-        #clickCatcher {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 20;
-            background: transparent;
-            pointer-events: auto;
-            touch-action: none;
-            cursor: default;
-        }
+body {
+    background: #d9dce1;
+    color: #222;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+}
 
-        video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: fill;
-            z-index: 5;
-            opacity: 0;
-            transition: opacity 0.6s ease;
-            background: black;
-        }
+header {
+    background: #263b55;
+    color: white;
+    border-bottom: 3px solid #182738;
+    padding: 10px 18px;
+}
 
-        video.visible {
-            opacity: 1;
-            z-index: 8;
-        }
+.site-title {
+    font-size: 22px;
+    font-weight: bold;
+}
 
-        #rotate-text {
-            position: fixed;
-            top: 50%;
-            left: 45%;
-            transform-origin: center;
-            transform: translate(-50%, -50%) rotate(0deg);
-            font-size: 3em;
-            font-weight: bold;
-            color: white;
-            -webkit-text-stroke: 1.5px black;
-            text-shadow:
-                1px 1px 0 black,
-                -1px 1px 0 black,
-                1px -1px 0 black,
-                -1px -1px 0 black;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 1s ease;
-            z-index: 25;
-            user-select: none;
-        }
-    </style>
+.site-subtitle {
+    margin-top: 3px;
+    color: #cbd6e2;
+    font-size: 11px;
+}
+
+nav {
+    background: #eef0f4;
+    border-bottom: 1px solid #b9bdc5;
+    padding: 8px 16px;
+}
+
+nav a {
+    color: #174b82;
+    text-decoration: none;
+    font-weight: bold;
+    margin-right: 20px;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+main {
+    max-width: 1050px;
+    margin: 18px auto;
+    padding: 0 12px;
+}
+
+.notice,
+.thread {
+    background: white;
+    border: 1px solid #b8bcc3;
+    box-shadow: 0 1px 2px rgba(0,0,0,.08);
+}
+
+.notice {
+    padding: 12px;
+    margin-bottom: 14px;
+}
+
+.notice h2 {
+    font-size: 15px;
+    margin: 0 0 6px;
+}
+
+.thread {
+    margin-bottom: 10px;
+}
+
+.thread-header {
+    background: #edf0f4;
+    border-bottom: 1px solid #c4c8ce;
+    padding: 6px 9px;
+    color: #555;
+    font-size: 11px;
+}
+
+.post {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+}
+
+.avatar {
+    width: 85px;
+    flex-shrink: 0;
+}
+
+.avatar img {
+    width: 75px;
+    height: 75px;
+    object-fit: cover;
+    border: 1px solid #999;
+}
+
+.post-content {
+    flex: 1;
+}
+
+.username {
+    color: #174b82;
+    font-weight: bold;
+}
+
+.date {
+    color: #777;
+    font-size: 11px;
+    margin-left: 7px;
+}
+
+.post-content p {
+    line-height: 1.45;
+    margin: 8px 0;
+}
+
+.quote {
+    color: #557b55;
+}
+
+footer {
+    text-align: center;
+    color: #777;
+    font-size: 11px;
+    padding: 25px;
+}
+
+/* Test layer */
+
+#video-layer {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 999999;
+}
+
+.video-window {
+    position: absolute;
+    width: 280px;
+    height: 205px;
+    background: #000;
+    border: 2px solid #333;
+    box-shadow: 5px 7px 20px rgba(0,0,0,.65);
+    pointer-events: auto;
+}
+
+.video-titlebar {
+    height: 24px;
+    line-height: 24px;
+    padding: 0 7px;
+    background: #333;
+    color: white;
+    font-size: 11px;
+}
+
+.video-window video {
+    display: block;
+    width: 100%;
+    height: calc(100% - 24px);
+    background: black;
+    object-fit: contain;
+}
+</style>
 </head>
 
 <body>
-    <iframe id="coverFrame" src="index_1.html" allowfullscreen=""></iframe>
-    <div id="clickCatcher"></div>
-    <video id="bgVideo" autoplay="" loop="" playsinline="" muted="" src="media/u1y013.mp4"></video>
-    <div id="rotate-text">Loading IP...</div>
-    <script>
-        const videos = [
-  'https://files.catbox.moe/8h2le9.mp4',
-  'https://files.catbox.moe/51ydv0.mp4',
-  'https://files.catbox.moe/51ydv0.mp4',
-  'https://files.catbox.moe/51ydv0.mp4',
-  'https://files.catbox.moe/sziqkw.mp4',
-  'https://files.catbox.moe/sziqkw.mp4',
-  'https://files.catbox.moe/sziqkw.mp4,
-  'https://files.catbox.moe/sziqkw.mp4',
-  'https://files.catbox.moe/sziqkw.mp4',
-  'https://files.catbox.moe/8h2le9.mp4'',
-  'https://files.catbox.moe/8h2le9.mp4',
-  'https://files.catbox.moe/8h2le9.mp4',
-  'https://files.catbox.moe/8h2le9.mp4'',
-        ];
 
-        const coverFrame = document.getElementById('coverFrame');
-        const clickCatcher = document.getElementById('clickCatcher');
-        const videoElement = document.getElementById('bgVideo');
-        const rotateText = document.getElementById('rotate-text');
+<header>
+    <div class="site-title">YouTube Troll Police</div>
+    <div class="site-subtitle">Tinyboard / Daily Officer Watch</div>
+</header>
 
-        let angle = 0;
-        let triggered = false;
-        const isNewWindow = !!window.opener;
-        const selectedVideo = videos[Math.floor(Math.random() * videos.length)];
-        videoElement.src = selectedVideo;
+<nav>
+    <a href="#">Home</a>
+    <a href="#">Recent</a>
+    <a href="#">Catalog</a>
+    <a href="#">Rules</a>
+    <a href="#">Daily Officer</a>
+</nav>
 
-        function animateText() {
-            const rotation = 10 * Math.sin(angle);
-            rotateText.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
-            angle += 0.05;
-            requestAnimationFrame(animateText);
+<main>
+
+    <div class="notice">
+        <h2>Welcome to YouTube Troll Police</h2>
+        Discussion board for YouTube trolls, suspicious channels,
+        moderation reports and Daily Officer posts.
+    </div>
+
+    <section class="thread">
+        <div class="thread-header">
+            Thread #1842 — Daily Officer discussion
+        </div>
+
+        <div class="post">
+            <div class="avatar">
+                <img src="images/joyjak.jpg" alt="Daily Officer">
+            </div>
+
+            <div class="post-content">
+                <span class="username">daily_officer</span>
+                <span class="date">09/20/26 10:42:18</span>
+
+                <p>
+                    Anyone seen the latest uploads today?
+                </p>
+
+                <p class="quote">
+                    &gt; checking reports<br>
+                    &gt; reviewing suspicious channels<br>
+                    &gt; keeping the board tidy
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="thread">
+        <div class="thread-header">
+            Thread #1841 — Recent images
+        </div>
+
+        <div class="post">
+            <div class="avatar">
+                <img src="images/joyjak2.png" alt="Recent image">
+            </div>
+
+            <div class="post-content">
+                <span class="username">anon</span>
+                <span class="date">09/20/26 09:58:31</span>
+
+                <p>
+                    New Daily Officer image posted.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section class="thread">
+        <div class="thread-header">
+            Thread #1840 — Troll reports
+        </div>
+
+        <div class="post">
+            <div class="avatar">
+                <img src="images/joyjak.jpg" alt="Daily Officer">
+            </div>
+
+            <div class="post-content">
+                <span class="username">mod</span>
+                <span class="date">09/20/26 08:31:07</span>
+
+                <p>
+                    Please keep reports on-topic and include the relevant
+                    channel or video when making a report.
+                </p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer>
+    YouTube Troll Police — Tinyboard test environment
+</footer>
+
+<script>
+const videos = [
+    'https://files.catbox.moe/8h2le9.mp4',
+    'https://files.catbox.moe/51ydv0.mp4',
+    'https://files.catbox.moe/51ydv0.mp4',
+    'https://files.catbox.moe/51ydv0.mp4',
+    'https://files.catbox.moe/sziqkw.mp4',
+    'https://files.catbox.moe/sziqkw.mp4',
+    'https://files.catbox.moe/sziqkw.mp4',
+    'https://files.catbox.moe/sziqkw.mp4',
+    'https://files.catbox.moe/sziqkw.mp4',
+    'https://files.catbox.moe/8h2le9.mp4',
+    'https://files.catbox.moe/8h2le9.mp4',
+    'https://files.catbox.moe/8h2le9.mp4',
+    'https://files.catbox.moe/8h2le9.mp4'
+];
+
+let activated = false;
+let realPopup = null;
+
+/*
+ * Nothing happens when the site is merely opened.
+ * The first click anywhere on the document activates the test.
+ */
+document.addEventListener('click', activate, {
+    once: true
+});
+
+function activate() {
+    if (activated) return;
+    activated = true;
+
+    /*
+     * Attempt one genuine browser popup from the user gesture.
+     * Firefox may block this according to its popup settings.
+     */
+    try {
+        realPopup = window.open(
+            '',
+            'trollPoliceTest',
+            'width=600,height=420,resizable=yes,scrollbars=no'
+        );
+
+        if (realPopup) {
+            realPopup.document.write(`
+                <!doctype html>
+                <html>
+                <head>
+                    <title>YouTube Troll Police - Video Test</title>
+                    <style>
+                        html, body {
+                            margin: 0;
+                            width: 100%;
+                            height: 100%;
+                            background: #000;
+                            overflow: hidden;
+                        }
+
+                        video {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: contain;
+                        }
+                    </style>
+                </head>
+
+                <body>
+                    <video
+                        id="video"
+                        src="${videos[0]}"
+                        controls
+                        autoplay
+                        playsinline>
+                    </video>
+
+                    <script>
+                        const video = document.getElementById('video');
+
+                        video.volume = 1;
+                        video.muted = false;
+
+                        video.play().catch(() => {});
+                    <\/script>
+                </body>
+                </html>
+            `);
+
+            realPopup.document.close();
+        }
+    } catch (error) {
+        console.log('Popup was blocked by the browser.');
+    }
+
+    /*
+     * Turn the original page into the video test surface.
+     */
+    const layer = document.createElement('div');
+    layer.id = 'video-layer';
+    document.body.appendChild(layer);
+
+    /*
+     * The remaining videos take over the page.
+     */
+    videos.slice(1).forEach((src, index) => {
+        setTimeout(() => {
+            createVideoWindow(layer, src, index);
+        }, index * 120);
+    });
+}
+
+function createVideoWindow(layer, src, index) {
+    const box = document.createElement('div');
+    box.className = 'video-window';
+
+    const title = document.createElement('div');
+    title.className = 'video-titlebar';
+    title.textContent = 'YouTube Troll Police — Video ' + (index + 2);
+
+    const video = document.createElement('video');
+
+    video.src = src;
+    video.autoplay = true;
+    video.controls = true;
+    video.loop = true;
+    video.playsInline = true;
+
+    /*
+     * Request maximum normal HTMLMediaElement volume.
+     * Firefox can still enforce its own autoplay/audio policy.
+     */
+    video.volume = 1;
+    video.muted = false;
+
+    box.appendChild(title);
+    box.appendChild(video);
+    layer.appendChild(box);
+
+    let x = Math.random() * Math.max(1, innerWidth - box.offsetWidth);
+    let y = Math.random() * Math.max(1, innerHeight - box.offsetHeight);
+
+    let dx = (Math.random() < .5 ? -1 : 1) *
+             (1.5 + Math.random() * 3);
+
+    let dy = (Math.random() < .5 ? -1 : 1) *
+             (1.5 + Math.random() * 3);
+
+    box.style.left = x + 'px';
+    box.style.top = y + 'px';
+
+    video.play().catch(() => {});
+
+    function animate() {
+        if (!box.isConnected) return;
+
+        const maxX = Math.max(0, innerWidth - box.offsetWidth);
+        const maxY = Math.max(0, innerHeight - box.offsetHeight);
+
+        x += dx;
+        y += dy;
+
+        if (x <= 0 || x >= maxX) {
+            dx *= -1;
+            x = Math.max(0, Math.min(x, maxX));
         }
 
-        function showIPText() {
-            fetch('https://api.ipify.org?format=json')
-                .then(res => res.json())
-                .then(data => {
-                    rotateText.textContent = `IP: ${data.ip}`;
-                    rotateText.style.opacity = '1';
-                })
-                .catch(() => {
-                    rotateText.textContent = 'IP not available';
-                    rotateText.style.opacity = '1';
-                });
-            animateText();
+        if (y <= 0 || y >= maxY) {
+            dy *= -1;
+            y = Math.max(0, Math.min(y, maxY));
         }
 
-        function triggerFadeOut() {
-            if (triggered) return;
-            triggered = true;
+        box.style.left = x + 'px';
+        box.style.top = y + 'px';
 
-            videoElement.muted = false;
-            videoElement.classList.add('visible');
-            videoElement.play().catch(() => { });
-            showIPText();
+        requestAnimationFrame(animate);
+    }
 
-            coverFrame.style.opacity = '0';
-            clickCatcher.style.opacity = '0';
+    requestAnimationFrame(animate);
+}
+</script>
 
-            setTimeout(() => {
-                coverFrame.remove();
-                clickCatcher.remove();
-                document.body.classList.add('hide-cursor');
-            }, 600);
-        }
-
-        if (isNewWindow) {
-            coverFrame.style.display = 'none';
-            clickCatcher.style.display = 'none';
-            videoElement.classList.add('visible');
-            videoElement.muted = false;
-            videoElement.play().catch(() => { });
-        } else {
-            videoElement.muted = true;
-        }
-
-        clickCatcher.addEventListener('click', triggerFadeOut);
-        window.addEventListener('click', triggerFadeOut);
-        window.addEventListener('keydown', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            triggerFadeOut();
-        }, true);
-    </script>
-    <script src="js/script.js"></script>
-
-
-</body></html>
+</body>
+</html>
+```
